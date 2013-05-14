@@ -1,0 +1,185 @@
+<!doctype html>
+<!-- vim: sw=2 ts=2
+-->
+<html lang=en>
+    <head>
+        <meta charset=utf-8>
+        <title></title>
+      <link rel="stylesheet" href="css.css">
+      <script src="vendor/bespoke.js"></script>
+  </head>
+      <body>
+      <article>
+        <section>
+          <h1 class="title">_vm, JuiCI and babashka</h1>
+          <h3 class="content">or how I didn't like any of the current tools for continuous integration, configuration management or version management, so I wrote my own</h3>
+          <p><sub>... with blackjack. and hookers</sub></p>
+        </section>
+        <section>
+          <h2 class="title">Things that already exist</h2>
+          <h3>
+          <ul>
+            <li>Jenkins / Travis</li>
+            <li>Babushka / Marelle</li>
+            <li>RVM / rbenv / chruby</li>
+            <br/>
+            <sub class="pull-down nb">Hi from the RVM core team!</sub></li>
+          </ul>
+          </h3>
+          <h3 class="pull-down">
+            ...but while they're all great tools, they kinda suck for the problem domains most of us deal with
+          </h3>
+        </section>
+
+        <section>
+        <h2 class="title">Which is to say that</h3>
+          <pre style="align: center;">Noone's problem domain is "be all things to all people"</pre>
+        </section>
+        <section>
+          <h2 class="title">The Unix Way</h2>
+          <h3>
+          <ul>
+            <li>Small composable tools</li>
+            <li>The hack you knock up today should be reusable tomorrow</li>
+            <br/>
+            <li>(For bonus points) Largely POSIX shell</sub>
+          </ul>
+          </h3>
+        </section>
+        <section>
+          <h2 class="title">_vm</h2>
+          <img src="images/all_the_things.jpg" alt="all the things">
+          <h3>The last version manager you'll ever need</h3>
+          <h3>Manage things with truly honeybadgeresque indifference</h3>
+        </section>
+        <section>
+          <pre class="code">
+#!/usr/bin/env ruby
+
+require File.expand_path('../lib/manager', __FILE__)
+
+class Ruby < Manager
+  include PosixProxy
+
+  name "ruby"
+  set_prefix "${_VM_PREFIX:-_}"
+
+  include Plugin::List
+  # Needs to be included last of the main_case plugins
+  include Plugin::Set
+
+  include Plugin::Ruby::Use
+  include Plugin::Ruby::Reset
+end
+
+_ruby = Ruby.new
+_ruby.build
+          </pre>
+        </section>
+        <section>
+          <h2 class="title">JuiCI</h2>
+          <p>CI for people who have shit to do</p>
+          <h3>
+          <ul>
+            <li>Priority is a first class citizen</li>
+            <li>Zero Configuration</li>
+            <li>Very little state</li>
+          </ul>
+          </h3>
+        </section>
+        <section>
+          <h2>Build Payload</h2>
+          <pre class="code">
+{
+  "project" : "UniqueIdentifier",
+  "environment" : {"MyKey": "MyValue", "SHA1": "deadbeef01"},
+  "command" : "if [ ! -d .git]; then git clone...; fi; " \
+              "git checkout -fq $SHA1; ./script/cibuild",
+  "priority" : 10,
+  "callbacks"  ["http://google.com/juici", "http://agent99.ourcompany.com/juici"]
+  "title" : "Live Coding Demo"
+}
+          </pre>
+        </section>
+        <section>
+          <h2>Callback Payload</h2>
+          <pre class="code">
+{
+  "project": "richo/juici",
+  "status": "success",
+  "url": "https://juici.herokuapp.com/builds/longwindeduuid",
+  "time": 8.123,
+  "warnings": [],
+}
+          </pre>
+        </section>
+        <section>
+          <h2 class="title">That "New Build" button</h2>
+        </section>
+        <section>
+          <h2 class="title">babashka</h2>
+          <h4>you paid for the whole seat, but ladies and gentlemen you'll only be needing the very edge</h4>
+        </section>
+        <section>
+          <h2 class="title">The thing about Babushka..</h2>
+          <p>Do your deps wind up looking like this?</p>
+          <pre class="code">
+dep "some piece of infrastructure" do
+  requires "some other thing",
+           "everything to be working"
+  met? {
+    shell?("some test that's awkward in ruby | grep foobar")
+  }
+  meet {
+    shell("Some arbitrary shell magic")
+  }
+end
+</pre>
+        </section>
+        <section>
+          <h2 class="title">What if they looked like this?</h2>
+          <pre class="code">
+some_piece_of_infrastructure() {
+  requires "some_other_thing"
+  requires "everything_to_be_working"
+  is_met() {
+    some test that's awkward in ruby | grep foobar
+  }
+  meet() {
+    Some arbitrary shell magic
+  }
+process
+}
+</pre>
+        </section>
+        <section>
+        <h2 class="title" style="padding-top: 120px;">I'm on a horse</h2>
+          <img src="images/im_on_a_horse.jpg" alt="all the things">
+        </section>
+        <section>
+          <img src="images/my_horse_is_amazing.jpg" alt="my horse is amazing">
+        </section>
+
+        <section>
+          <h2 class="title">But seriously</h2>
+          <h3>what if they also didn't need ruby</h3>
+        </section>
+        <section>
+          <h3>Or actually on installing anything (but there is a neat bootstrap wrapper anyway)</h3>
+        </section>
+        <section>
+          <h2 class="title">I've been richo</h2>
+          <h5>You can contact (or abuse) me at these places:</h5>
+          <ul>
+            <li>https://github.com/richo</li>
+            <li>https://twitter.com/rich0H</li>
+            <li>DevOps'ing @99designs</li>
+          </ul>
+        </section>
+      </article>
+  </body>
+  <script type="text/javascript">
+    bespoke.horizontal.from('article');
+  </script>
+</html>
+
